@@ -6,6 +6,7 @@ import com.mkop.beerclient.model.BeerPagedList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -25,11 +26,11 @@ public class BeerClientImpl implements BeerClient {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path(WebClientProperties.LIST_BEER_PATH)
-                        .queryParamIfPresent("pageNumber", getQueryParameterOptional(pageNumber))
-                        .queryParamIfPresent("pageSize", getQueryParameterOptional(pageSize))
-                        .queryParamIfPresent("beerName", getQueryParameterOptional(beerName))
-                        .queryParamIfPresent("beerStyle", getQueryParameterOptional(beerStyle))
-                        .queryParamIfPresent("showInventoryOnHand", getQueryParameterOptional(showInventoryOnHand))
+                        .queryParamIfPresent("pageNumber", Optional.ofNullable(pageNumber))
+                        .queryParamIfPresent("pageSize", Optional.ofNullable(pageSize))
+                        .queryParamIfPresent("beerName", Optional.ofNullable(beerName))
+                        .queryParamIfPresent("beerStyle", Optional.ofNullable(beerStyle))
+                        .queryParamIfPresent("showInventoryOnHand", Optional.ofNullable(showInventoryOnHand))
                         .build()
                 )
                 .retrieve()
@@ -42,6 +43,7 @@ public class BeerClientImpl implements BeerClient {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path(WebClientProperties.BEER_BY_ID_PATH)
+                        .queryParamIfPresent("showInventoryOnHand", Optional.ofNullable(showInventoryOnHand))
                         .build(beerId))
                 .retrieve()
                 .bodyToMono(BeerDto.class);
@@ -49,26 +51,47 @@ public class BeerClientImpl implements BeerClient {
 
     @Override
     public Mono<BeerDto> getBeerByUPC(String upc) {
-        return null;
+        return webClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(WebClientProperties.BEER_BY_UPC_PATH)
+                        .build(upc))
+                .retrieve()
+                .bodyToMono(BeerDto.class);
     }
 
     @Override
-    public Mono<ResponseEntity> createBeer(BeerDto beer) {
-        return null;
+    public Mono<ResponseEntity<Void>> createBeer(BeerDto beer) {
+        return webClient
+                .post()
+                .uri(WebClientProperties.CREATE_BEER_PATH)
+                .body(BodyInserters.fromValue(beer))
+                .retrieve()
+                .toBodilessEntity();
     }
 
     @Override
-    public Mono<ResponseEntity> deleteBeer(UUID beerId) {
-        return null;
+    public Mono<ResponseEntity<Void>> deleteBeer(UUID beerId) {
+        return webClient
+                .delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path(WebClientProperties.DELETE_BEER_BY_ID_PATH)
+                        .build(beerId))
+                .retrieve()
+                .toBodilessEntity();
     }
 
     @Override
-    public Mono<ResponseEntity> updateBeer(UUID beerId, BeerDto beer) {
-        return null;
-    }
+    public Mono<ResponseEntity<Void>> updateBeer(UUID beerId, BeerDto beer) {
+        return webClient
+                .put()
+                .uri(uriBuilder -> uriBuilder
+                        .path(WebClientProperties.UPDATE_BEER_BY_ID_PATH)
+                        .build(beerId))
+                .body(BodyInserters.fromValue(beer))
+                .retrieve()
+                .toBodilessEntity();
 
-    private Optional<Object> getQueryParameterOptional(Object o){
-        return o!=null?Optional.of(o):Optional.empty();
     }
 
 }

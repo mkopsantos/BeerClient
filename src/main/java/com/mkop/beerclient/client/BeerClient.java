@@ -16,11 +16,11 @@ public interface BeerClient {
 
     Mono<BeerDto> getBeerByUPC(String upc);
 
-    Mono<ResponseEntity> createBeer(BeerDto beer);
+    Mono<ResponseEntity<Void>> createBeer(BeerDto beer);
 
-    Mono<ResponseEntity> deleteBeer(UUID beerId);
+    Mono<ResponseEntity<Void>> deleteBeer(UUID beerId);
 
 
-    Mono<ResponseEntity> updateBeer(UUID beerId, BeerDto beer);
+    Mono<ResponseEntity<Void>> updateBeer(UUID beerId, BeerDto beer);
 
 }
