@@ -73,6 +73,14 @@ class BeerClientImplTest {
     }
 
     @Test
+    void getBeerByIdNotFound() {
+        Mono<BeerDto> beerById = beerClient.getBeerById(UUID.randomUUID(), false);
+        BeerDto beerDto = beerById.block();
+        assertThat(beerDto).isNotNull();
+        assertThat(beerDto.getId()).isNull();
+    }
+
+    @Test
     void getBeerByIdNonBlocking() throws InterruptedException {
         Mono<BeerDto> beerMono = beerClient.getBeerById(getExistingBeer().getId(), false);
         AtomicReference<BeerDto> dtoAtomicReference = new AtomicReference<>();

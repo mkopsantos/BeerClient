@@ -4,6 +4,7 @@ import com.mkop.beerclient.config.WebClientProperties;
 import com.mkop.beerclient.model.BeerDto;
 import com.mkop.beerclient.model.BeerPagedList;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -46,6 +47,7 @@ public class BeerClientImpl implements BeerClient {
                         .queryParamIfPresent("showInventoryOnHand", Optional.ofNullable(showInventoryOnHand))
                         .build(beerId))
                 .retrieve()
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.empty())
                 .bodyToMono(BeerDto.class);
     }
 
