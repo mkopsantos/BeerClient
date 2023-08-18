@@ -78,9 +78,12 @@
 							<include>src/main/java/**/*.java</include>
 							<include>src/test/java/**/*.java</include>
 						</includes>
-						<importOrder />
-						<removeUnusedImports />
+						<importOrder/>
+						<removeUnusedImports>
+							<engine>google-java-format</engine>    <!-- optional. Defaults to `google-java-format`. Can be switched to `cleanthat-javaparser-unnecessaryimport` (e.g. to process JDK17 source files with a JDK8+ Runtime) -->
+						</removeUnusedImports>
 						<toggleOffOn/>
+						<formatAnnotations />
 						<trimTrailingWhitespace/>
 						<endWithNewline/>
 						<indent>
